@@ -1,1 +1,2 @@
 This is a project that analyze email text data.
+Email's title and contents are used to analyze users type.
