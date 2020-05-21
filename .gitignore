@@ -1,0 +1,6 @@
+# exclude directory
+.idea/
+
+# sensitive data
+*.eml
+*.csv
