@@ -16,7 +16,9 @@ class EmlToCSV(object):
                 body = msg.get_payload(decode=True).decode('UTF-8')
             else:
                 body = ''
-            body = re.sub('<head.*/head>|<style.*/style>|<!-.+?->|<.+?>|&nbsp;|\t|\r', '', body, 0, re.I | re.S)
+            body = re.split('-*\s*Original Message', body)[0]
+            pattern = '<head.*/head>|<style.*/style>|<!-.+?->|<.+?>|&nbsp;|\t|\r|\u200b'
+            body = re.sub(pattern, '', body, 0, re.I | re.S)
             body = ''.join(body.splitlines())
 
             return msg['Subject'], body
@@ -26,18 +28,17 @@ class EmlToCSV(object):
             return './emails.csv'
 
         csv_file = open('./emails.csv', 'w', encoding='utf-8', newline='')
-        field_names = ['subject', 'body', 'type']
+        field_names = ['subject', 'body', 'reply']
 
         writer = csv.DictWriter(csv_file, fieldnames=field_names)
         writer.writeheader()
 
         for (path, directory, files) in os.walk(file_path):
-            if path is not file_path:
-                dir_label = os.path.split(path)[-1]
-                for file in files:
+            for file in files:
+                if file.endswith('.eml'):
                     subject, body = self.get_eml(path + '/' + file)
-                    writer.writerow({'subject': subject, 'body': body, 'type': dir_label})
-
+                    if body.isspace() is False:
+                        writer.writerow({'subject': subject, 'body': body, 'reply': 0})
         csv_file.close()
         return './emails.csv'
 
