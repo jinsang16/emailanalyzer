@@ -27,8 +27,8 @@ class EmlToCSV(object):
         if os.path.isfile('./emails.csv'):
             return './emails.csv'
 
-        csv_file = open('./emails.csv', 'w', encoding='utf-8', newline='')
-        field_names = ['subject', 'body', 'reply']
+        csv_file = open('./emails.csv', 'w', encoding='utf-8-sig', newline='')
+        field_names = ['subject', 'body']
 
         writer = csv.DictWriter(csv_file, fieldnames=field_names)
         writer.writeheader()
@@ -38,7 +38,7 @@ class EmlToCSV(object):
                 if file.endswith('.eml'):
                     subject, body = self.get_eml(path + '/' + file)
                     if body.isspace() is False:
-                        writer.writerow({'subject': subject, 'body': body, 'reply': 0})
+                        writer.writerow({'subject': subject, 'body': body})
         csv_file.close()
         return './emails.csv'
 

@@ -1,9 +1,7 @@
+import pandas as pd
 
 from emailparser import emlToCsv
 from keywords import keywordtokenizer
-from keywords import keywordanalyzer
-
-import pandas as pd
 
 
 def get_file_path():
@@ -43,20 +41,20 @@ def add_labelled_columns(data_frame):
 
     return data_frame
 
+
 if __name__ == '__main__':
     # 1. Changed the email files to csv files
     file_path = get_file_path()
     csv_file_path = emlToCsv.EmlToCSV().change_eml_to_csv_file(file_path)
     print(csv_file_path)
 
-    # 2. Read the csv file and make word list
+    # 2. Read the csv file and drop unnecessary data
     df = pd.read_csv(csv_file_path)
     df.dropna(axis=0, inplace=True)
+    df.drop_duplicates(subset=['subject'], inplace=True)
 
     df = add_labelled_columns(df)
-    df.to_csv('E:\EMAIL\Data\LEEJINSANG\emails.csv', encoding='utf-8-sig')
+    df.to_csv('E:\EMAIL\Data\LEEJINSANG\emails.csv', encoding='utf-8-sig', index=None)
 
+    # 3. Make word list
     word_list = get_words_list(df)
-
-    # 3. Count the word counts.
-    frequent_words = keywordanalyzer.get_most_frequent_words(word_list, 100)
