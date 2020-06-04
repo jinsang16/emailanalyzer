@@ -1,6 +1,7 @@
 import pandas as pd
 
 from emailparser import emlToCsv
+from keywords import keywordanalyzer
 from keywords import keywordtokenizer
 
 
@@ -28,15 +29,15 @@ def get_words_list(data_frame):
 
 def add_labelled_columns(data_frame):
     data_frame['labelled'] = 0
-    subject_list = list(data_frame['subject'].values)
+    subject_list = list(map(lambda x: x.upper(), data_frame['subject'].values))
 
     for i in data_frame.index:
         subject = data_frame.loc[i, 'subject']
-        subject = 'RE: ' + subject
+        subject = 'RE: ' + subject.upper()
 
         if subject in subject_list:
             data_frame.loc[i, 'labelled'] = 1
-            print(subject)
+            print(data_frame.loc[i, 'subject'])
             print('This subject has a reply name.')
 
     return data_frame
@@ -50,11 +51,15 @@ if __name__ == '__main__':
 
     # 2. Read the csv file and drop unnecessary data
     df = pd.read_csv(csv_file_path)
-    df.dropna(axis=0, inplace=True)
+    df.dropna(subset=['body'], axis=0, inplace=True)
     df.drop_duplicates(subset=['subject'], inplace=True)
 
     df = add_labelled_columns(df)
     df.to_csv('E:\EMAIL\Data\LEEJINSANG\emails.csv', encoding='utf-8-sig', index=None)
 
     # 3. Make word list
-    word_list = get_words_list(df)
+    word_list = get_words_list(df.loc[df['labelled'] > 0])
+
+    # 4. Count the word counts.
+    frequent_words = keywordanalyzer.get_most_frequent_words(word_list, 99999)
+    print('frequent_words:', frequent_words)
