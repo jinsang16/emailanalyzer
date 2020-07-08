@@ -3,6 +3,7 @@ import pandas as pd
 from emailparser import emlToCsv
 from keywords import keywordanalyzer
 from keywords import keywordtokenizer
+from pattern import invitedchecker
 
 
 def get_file_path():
@@ -29,6 +30,7 @@ def get_words_list(data_frame):
 
 def add_labelled_columns(data_frame):
     data_frame['labelled'] = 0
+    data_frame['subject'] = data_frame['subject'].astype(str)
     subject_list = list(map(lambda x: x.upper(), data_frame['subject'].values))
 
     for i in data_frame.index:
@@ -63,3 +65,9 @@ if __name__ == '__main__':
     # 4. Count the word counts.
     frequent_words = keywordanalyzer.get_most_frequent_words(word_list, 99999)
     print('frequent_words:', frequent_words)
+
+    # check invited mail
+    df = invitedchecker.add_invited_col(df)
+    df = invitedchecker.get_invited_date(df)
+    df.to_csv('E:\EMAIL\Data\LEEJINSANG\emails.csv', encoding='utf-8-sig', index=None)
+    # print(df.loc[df['invited'] > 0])
