@@ -19,7 +19,7 @@ class EmlToCSV(object):
             body = re.split('-*\s*Original Message', body)[0]
             pattern = '<head.*/head>|<style.*/style>|<!-.+?->|<.+?>|&nbsp;|\t|\r|\u200b'
             body = re.sub(pattern, '', body, 0, re.I | re.S)
-            body = ' '.join(body.splitlines())
+            # body = ' '.join(body.splitlines())
 
             return msg['Date'], msg['Subject'], body
 
